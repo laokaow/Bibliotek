@@ -15,24 +15,36 @@
     </properties>
 
     <dependencies>
-        <!-- JavaFX Dependencies -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17</version> <!-- Kontrollera att detta är den senaste versionen för din JDK -->
+            <version>17</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>17</version> <!-- Kontrollera att detta är den senaste versionen för din JDK -->
+            <version>17</version>
         </dependency>
 
-        <!-- MySQL JDBC Dependency -->
+        <!-- Nedanstående kod har ett säkerhetsproblem
+         Det använder protobuf-java:3.25.1 som har ett problem
+         -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.29</version> <!-- Kontrollera att detta är den senaste versionen -->
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.3.0</version>
         </dependency>
+
+   <!-- Därför lades nedanstående kod in för att den
+    använder den nyaste uppdaterade versionen som inte har detta problem-->
+
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>4.30.2</version>
+        </dependency>
+
     </dependencies>
+
 
 </project>
