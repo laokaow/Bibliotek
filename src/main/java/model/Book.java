@@ -1,17 +1,15 @@
 package model;
 
 public class Book extends Media{
-    private String author;
-    private String isbn;
-    private int pageCount;
-    private boolean partOfCourse;
+    private final String author;
+    private final String isbn;
+    private final int pageCount;
 
-    public Book(int mediaId, String mediaName, MediaType mediaType, String author, String isbn, int pageCount, boolean partOfCourse){
-        super(mediaId, mediaName, mediaType.BOOK);
+    public Book(int mediaId, String mediaName, MediaType mediaType, boolean partOfCourse, String author, String isbn, int pageCount){
+        super(mediaId, mediaName, mediaType.BOOK, partOfCourse);
         this.author = author;
         this.isbn = isbn;
         this.pageCount = pageCount;
-        this.partOfCourse = partOfCourse;
     }
 
     public String getAuthor() {
@@ -22,8 +20,5 @@ public class Book extends Media{
     }
     public int getPageCount(){
         return pageCount;
-    }
-    public boolean getPartOfCourse(){
-        return partOfCourse;
     }
 }
