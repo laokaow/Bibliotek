@@ -1,9 +1,11 @@
 package model;
 
+
 public class Actor {
-    private int actorId;
-    private String firstName;
-    private String lastName;
+    private final int actorId;
+    private final String firstName;
+    private final String lastName;
+
 
     public Actor(int actorId, String firstName, String lastName){
         this.actorId = actorId;

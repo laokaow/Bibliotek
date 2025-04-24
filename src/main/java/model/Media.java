@@ -1,6 +1,5 @@
 package model;
 
-
 public class Media {
     public enum MediaType {
         BOOK,
@@ -10,7 +9,7 @@ public class Media {
     }
     private int mediaId;
     private String mediaName;
-    private  MediaType mediaType;
+    private MediaType mediaType;
     private boolean partOfCourse;
     //Funderar ifall medaType skall göras final. Det ska aldrig ändras för ett objekt
     //Visserligen så är det så för all annan data också - Men folk kan göra misstag
@@ -49,7 +48,7 @@ public class Media {
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
     }
-    public void setPartOfCorse(boolean partOfCourse){
+    public void setPartOfCourse(boolean partOfCourse){
         this.partOfCourse = partOfCourse;
     }
 }
