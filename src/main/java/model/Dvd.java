@@ -9,8 +9,8 @@ public class Dvd extends Media{
     private final String productionCountry;
     private final String director;
     private final int duration;
-    List<Actor> actor = new ArrayList<Actor>();
-    List<Category> category = new ArrayList<Category>();
+    private List<Actor> actor = new ArrayList<Actor>();
+    private List<Category> category = new ArrayList<Category>();
 
     public Dvd(int mediaId, String mediaName, MediaType mediaType, boolean partOfCourse, int ageLimit, String productionCountry, String director, int duration){
         super(mediaId, mediaName, mediaType.DVD, partOfCourse);
@@ -18,7 +18,6 @@ public class Dvd extends Media{
         this.productionCountry = productionCountry;
         this.director = director;
         this.duration = duration;
-
 
     }
 
@@ -35,5 +34,18 @@ public class Dvd extends Media{
     public int getDuration(){
         return duration;
     }
+    public List<Actor> getActor(){
+        return actor;
+    }
+    public void addActor(Actor actor){
+        this.actor.add(actor);
+    }
+    public List<Category> getCategory(){
+        return category;
+    }
+    public void addCategory(Category category){
+        this.category.add(category);
+    }
+
 
 }

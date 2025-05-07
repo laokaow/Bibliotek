@@ -26,4 +26,10 @@ public class Book extends Media{
     public int getPageCount(){
         return pageCount;
     }
+    public List<Category> getCategory(){
+        return category;
+    }
+    public void addCategory(Category category){
+        this.category.add(category);
+    }
 }

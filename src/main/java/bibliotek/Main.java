@@ -11,7 +11,6 @@ public class Main {
         String url = dotenv.get("DB_URL");
         String user = dotenv.get("DB_USER");
         String password = dotenv.get("DB_PASSWORD");
-
         System.out.println("URL: " + url);
         System.out.println("USERNAME: " + user);
         System.out.println("PASSWORD: " + password);

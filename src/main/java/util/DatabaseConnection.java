@@ -20,5 +20,6 @@ public class DatabaseConnection
     public static Connection getConnection()throws SQLException{
         return DriverManager.getConnection(url, user, password);
     }
+    //metoden som kallas genom DatabaseConnection.getConnection i DAO-klasserna för att upprätta anslutning
 
 }
