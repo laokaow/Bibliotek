@@ -1,19 +1,19 @@
 package model;
 
-public class Users {
+public class User {
     public enum UserType
     {STUDENT, TEACHER, RESEARCHER, PUBLIC, STAFF}
 
-    private int userId;
-    private String firstName;
-    private String lastName;
+    private final int userId;
+    private final String firstName;
+    private final String lastName;
     private String email;
     private String phoneNumber;
     private String pinCode;
     private UserType userType;
 
 
-    public Users( int userId, String firstName, String lastName, String email, String phoneNumber, String pinCode, UserType userType){
+    public User( int userId, String firstName, String lastName, String email, String phoneNumber, String pinCode, UserType userType){
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;

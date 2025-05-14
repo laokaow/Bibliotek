@@ -1,7 +1,7 @@
 package model;
 
 
-public class Actor {
+public class Actor { //IntelliJ förslår att göra detta till en record class
     private final int actorId;
     private final String firstName;
     private final String lastName;
