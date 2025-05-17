@@ -1,5 +1,7 @@
 package model;
-
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 public class Media {
     public enum MediaType {
         BOOK,
@@ -30,10 +32,10 @@ public class Media {
         return mediaName;
     }
 
-    public MediaType getMediaType(MediaType mediaType) {
+    public MediaType getMediaType() {
         return mediaType;
     }
-    public boolean getPartOfCourse(boolean partOfCourse){
+    public boolean getPartOfCourse(){
         return partOfCourse;
     }
 
@@ -51,4 +53,10 @@ public class Media {
     public void setPartOfCourse(boolean partOfCourse){
         this.partOfCourse = partOfCourse;
     }
+
+
+
 }
+
+
+

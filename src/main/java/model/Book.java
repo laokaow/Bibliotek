@@ -7,7 +7,7 @@ public class Book extends Media{
     private final String author;
     private final String isbn;
     private final int pageCount;
-    private List<Category> category = new ArrayList<Category>();
+     List<Category> category = new ArrayList<Category>();
 
     public Book(int mediaId, String mediaName, MediaType mediaType, boolean partOfCourse, String author, String isbn, int pageCount, List<Category> category){
         super(mediaId, mediaName, mediaType.BOOK, partOfCourse);
@@ -17,6 +17,9 @@ public class Book extends Media{
         this.category = category;
     }
 
+    public void setCategories(List<Category> category) {
+        this.category = category;
+    }
     public String getAuthor() {
         return author;
     }
@@ -27,3 +30,4 @@ public class Book extends Media{
         return pageCount;
     }
 }
+
