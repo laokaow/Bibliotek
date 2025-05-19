@@ -3,14 +3,13 @@ package dao;
 import model.User;
 import model.User.UserType;
 import java.sql.*;
-import util.DatabaseConnection;
 import util.PasswordUtil;
 
 public class UserDAO {
     private final Connection connection;
 
     public UserDAO(Connection connection) throws SQLException {
-        this.connection = DatabaseConnection.getConnection();
+        this.connection = connection;
     }
 
     public User authenticateUser(String email, String password) {
@@ -194,7 +193,7 @@ public class UserDAO {
     }
 }
 
-    //deleteUser
+
 
 
 //En tanke var att hantera all update-logik i en generell update-metod, men detta kändes väldigt komplext att hantera så separata update-metoder valdes istället.
