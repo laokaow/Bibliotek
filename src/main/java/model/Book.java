@@ -31,5 +31,5 @@ public class Book extends Media{
     }
     public void addCategory(Category category){
         this.category.add(category);
-    }
+    } //Borde dokumentera tydligare, minns inte varför denna addCategory gjordes. Kan det vara för att det är en ArrayList?
 }
