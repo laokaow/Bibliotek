@@ -31,6 +31,10 @@ public class User {
     public String getLastName(){
         return lastName;
     }
+
+    public String getName() {
+        return firstName + " " + lastName;
+    }
     public String getEmail() {
         return email;
     }

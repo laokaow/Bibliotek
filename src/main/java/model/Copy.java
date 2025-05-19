@@ -2,7 +2,7 @@ package model;
 
 public class Copy {
     private final int copyId; /**Tanken är att det här skall vara den unika barcoden*/
-    private final int mediaId;
+    private final Media media; //Bättre att skapa mediaobjekt. Enklare att hämta mediaNamn till kvittot
     private final boolean referenceCopy; //Går att argumentera för att detta inte ska vara final, för projektets skull så får den vara det
     private AvailabilityStatus availability;
     private Location location;
@@ -11,11 +11,12 @@ public class Copy {
         AVAILABLE, LOANED, LOST, DAMAGED
     }
 
-    public Copy(int copyId, int mediaId, boolean referenceCopy, AvailabilityStatus availability) {
+    public Copy(int copyId, Media media, boolean referenceCopy, AvailabilityStatus availability, Location location) {
         this.copyId = copyId;
-        this.mediaId = mediaId;
+        this.media = media;
         this.referenceCopy = referenceCopy;
         this.availability = availability;
+        this.location = location;
     }
 
     public int getCopyId() {
@@ -23,7 +24,13 @@ public class Copy {
     }
 
     public int getMediaId() {
-        return mediaId;
+        return media.getMediaId();
+    }
+    public String getMediaName(){
+        return media.getMediaName();
+    }
+    public Media.MediaType getMediaType(){
+        return media.getMediaType();
     }
 
     public boolean isReferenceCopy() {
