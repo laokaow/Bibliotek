@@ -1,5 +1,6 @@
 package model;
 
+//IDEn rekommenderar record class - värt att överväga
 public class Category {
     private final int categoryId;
     private final String categoryName;
