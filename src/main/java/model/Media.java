@@ -31,15 +31,21 @@ public class Media {
         return mediaName;
     }
 
-    public MediaType getMediaType(MediaType mediaType) {
+    public MediaType getMediaType() {
         return mediaType;
     }
-    public boolean getPartOfCourse(boolean partOfCourse){
+
+    public boolean getPartOfCourse(){
         return partOfCourse;
     }
+
     public void setPartOfCourse(boolean partOfCourse){
         this.partOfCourse = partOfCourse;
     }
+
+}
+
+
 /* Gamla setters som jag inte har tagit bort för att det är jobbigt att skriva igen.
     public void setMediaId(int mediaId) {
         this.mediaId = mediaId;
@@ -53,4 +59,4 @@ public class Media {
         this.mediaType = mediaType;
     } **/
 
-}
+
