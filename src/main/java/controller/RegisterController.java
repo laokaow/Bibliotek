@@ -14,25 +14,24 @@ public class RegisterController implements SceneManager.ControlledScene {
     @FXML private TextField txtPhone;
     @FXML private PasswordField txtPinCode;
     @FXML private PasswordField txtPinCodeConfirm;
-    @FXML private ComboBox<User.UserType> cmbUserType;  // Enum med usertyper
-    @FXML private Button btnRegister;
+    @FXML private ComboBox<User.UserType> cmbUserType;
     @FXML private Label lblStatus;
-    @FXML private Hyperlink linkToLogin;
 
     private UserDAO userDAO;
 
     @FXML
     private void initialize() {
         userDAO = DAOFactory.getUserDAO();
+        System.out.println("RegisterController initierad.");
+        this.userDAO = DAOFactory.getUserDAO();
 
-        cmbUserType.getItems().setAll(User.UserType.values()); // Visa alla typer
-        cmbUserType.setPromptText("Användartyp");
-
-        btnRegister.setOnAction(event -> handleRegister());
-
-        linkToLogin.setOnAction(e -> SceneManager.showLoginView());
+        if (this.userDAO == null) {
+            System.err.println("DAOFactory.getUserDAO() returnerade null!");
+        }
+        cmbUserType.getItems().setAll(User.UserType.values());
     }
 
+    @FXML
     private void handleRegister() {
         String firstName = txtFirstName.getText().trim();
         String lastName = txtLastName.getText().trim();
@@ -42,31 +41,39 @@ public class RegisterController implements SceneManager.ControlledScene {
         String pinConfirm = txtPinCodeConfirm.getText();
         User.UserType userType = cmbUserType.getValue();
 
-        if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || pinCode.isEmpty() || userType == null) {
-            lblStatus.setText("Fyll i alla obligatoriska fält.");
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || pinCode.isEmpty() || pinConfirm.isEmpty() || userType == null) {
+            showStatus("Fyll i alla obligatoriska fält.");
             return;
         }
 
-        if(!pinCode.equals(pinConfirm)) {
-            lblStatus.setText("PIN-koder matchar inte.");
+        if (!pinCode.equals(pinConfirm)) {
+            showStatus("PIN-koder matchar inte.");
             return;
         }
 
         User newUser = new User(0, firstName, lastName, email, phone, pinCode, userType);
-
         User created = userDAO.createUser(newUser);
 
-        if(created != null) {
-            lblStatus.setText("Registrering lyckades! Logga in.");
+        if (created != null) {
+            showStatus("Registrering lyckades! Logga in.");
             SceneManager.showLoginView();
         } else {
-            lblStatus.setText("Något gick fel vid registrering.");
+            showStatus("Något gick fel vid registrering.");
         }
+    }
+
+    @FXML
+    private void goToLogin() {
+        SceneManager.showLoginView();
+    }
+
+    private void showStatus(String message) {
+        lblStatus.setText(message);
+        lblStatus.setVisible(true);
     }
 
     @Override
     public void setData(Object data) {
         // Ingen data behövs
     }
-
 }

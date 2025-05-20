@@ -3,50 +3,61 @@ package controller;
 import dao.DAOFactory;
 import dao.UserDAO;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import model.User;
-
-import java.awt.event.ActionEvent;
+import service.LoginService;
 
 public class LoginController implements SceneManager.ControlledScene {
 
-    @FXML private TextField txtEmail;
-    @FXML private PasswordField txtPinCode;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
     @FXML private Button btnLogin;
     @FXML private Hyperlink linkToRegister;
+    @FXML private Label errorLabel;
     @FXML private Label lblStatus;
 
-    private UserDAO userDAO;
+    private LoginService loginService;
 
     @FXML
     private void initialize() {
-        userDAO = DAOFactory.getUserDAO();
-
-        btnLogin.setOnAction(event -> handleLogin());
-        linkToRegister.setOnAction(event -> SceneManager.showRegisterView());
+        UserDAO userDAO = DAOFactory.getUserDAO();
+        loginService = new LoginService(userDAO);
     }
 
+    @FXML
     private void handleLogin() {
-        String email = txtEmail.getText().trim();
-        String pin = txtPinCode.getText();
+        String email = emailField.getText().trim();
+        String pin = passwordField.getText().trim();
 
-        if(email.isEmpty() || pin.isEmpty()) {
-            lblStatus.setText("Fyll i alla fält.");
+        if (email.isEmpty() || pin.isEmpty()) {
+            showStatus("Fyll i alla fält.");
             return;
         }
 
-        User user = userDAO.authenticateUser(email, pin);
-
-        if(user != null) {
-            lblStatus.setText("Inloggning lyckades!");
-            SceneManager.showProfileView(user);
+        User user = loginService.login(email, pin);
+        if (user != null) {
+            System.out.println("Inloggad som: " + user.getUserType());
+            // TODO: Byt scen här med SceneManager.showXView()
         } else {
-            lblStatus.setText("Fel e-post eller PIN-kod.");
+            showError("Fel e-post eller PIN-kod.");
         }
+    }
+
+    @FXML
+    private void goToRegister() {
+        SceneManager.showRegisterView();
+    }
+
+    private void showError(String message) {
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
+        lblStatus.setVisible(false);
+    }
+
+    private void showStatus(String message) {
+        lblStatus.setText(message);
+        lblStatus.setVisible(true);
+        errorLabel.setVisible(false);
     }
 
     @Override
