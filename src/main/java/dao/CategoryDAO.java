@@ -1,5 +1,6 @@
-package model;
+package dao;
 
+import model.Category;
 import util.DatabaseConnection;
 
 import java.sql.Connection;

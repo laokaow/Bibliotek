@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      spacing="30" alignment="CENTER_LEFT" style="-fx-background-color: #00695c; -fx-padding: 20;">
+    <Label fx:id="lblHeader" text="Bibliotek.se" style="-fx-text-fill: white; -fx-font-size: 30px; -fx-font-weight: bold;" />
+    <Button fx:id="btnStart" text="Start" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px;" />
+    <Button fx:id="btnServices" text="Våra tjänster" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px;" />
+    <Button fx:id="btnInspiration" text="Inspiration" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px;" />
+    <Button fx:id="btnMedia" text="Media" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px;" />
+    <Button fx:id="btnLiterature" text="Litteratur" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px;" />
+    <Button fx:id="btnHelp" text="Hjälp" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px;" />
+    <Button fx:id="btnAccount" text="Mina sidor" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px;" />
+</HBox>

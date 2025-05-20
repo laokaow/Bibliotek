@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.StartController"
+            prefHeight="850.0" prefWidth="1280.0"
+            style="-fx-background-color: linear-gradient(to bottom, #e0f7fa, #ffffff);">
+
+    <top>
+        <fx:include source="Header.fxml"/>
+    </top>
+
+    <center>
+        <!-- Innehåll för startsidan -->
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 40;">
+            <Label text="Välkommen till Bibliotek.se" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+            <!-- Ytterligare komponenter -->
+            <ComboBox fx:id="cmbSearchCategory" prefWidth="200" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <fx:include source="Footer.fxml"/>
+    </bottom>
+
+</BorderPane>

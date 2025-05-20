@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AdminController"
+            prefHeight="850.0" prefWidth="1280.0"
+            style="-fx-background-color: #f5f5f5;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #424242; -fx-padding: 20;">
+            <Label text="Adminpanel" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;" />
+        </HBox>
+    </top>
+
+    <center>
+        <!-- Innehåll för adminpanelen -->
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 40;">
+            <Label text="Välkommen, administratör" style="-fx-font-size: 18px;" />
+            <!-- Ytterligare komponenter -->
+        </VBox>
+    </center>
+
+</BorderPane>

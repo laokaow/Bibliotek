@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<VBox xmlns="http://javafx.com/javafx/17" fx:controller="controller.RegisterController" xmlns:fx="http://javafx.com/fxml/1"
+      alignment="CENTER" spacing="15" prefWidth="450" prefHeight="600"
+      style="-fx-padding: 40; -fx-background-color: white;">
+
+    <Label text="Registrera konto" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="txtFirstName" promptText="Förnamn" prefWidth="350"/>
+    <TextField fx:id="txtLastName" promptText="Efternamn" prefWidth="350"/>
+    <TextField fx:id="txtEmail" promptText="E-post" prefWidth="350"/>
+    <TextField fx:id="txtPhone" promptText="Telefonnummer" prefWidth="350"/>
+    <PasswordField fx:id="txtPinCode" promptText="Välj PIN-kod" prefWidth="350"/>
+
+    <ComboBox fx:id="cmbUserType" prefWidth="350" promptText="Användartyp" />
+
+    <Button fx:id="btnRegister" text="Skapa konto" prefWidth="350"/>
+
+    <HBox alignment="CENTER" spacing="10">
+        <Label text="Har du redan ett konto?" />
+        <Hyperlink fx:id="linkToLogin" text="Logga in" />
+    </HBox>
+    <HBox alignment="CENTER" spacing="10">
+        <Label text="Hemknapp"/>
+        <fx:include source="/view/HomeButton.fxml" />
+    </HBox>
+</VBox>
