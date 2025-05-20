@@ -1,5 +1,6 @@
-package model;
+package dao;
 
+import model.Media;
 import util.DatabaseConnection;
 
 import java.sql.Connection;
@@ -9,8 +10,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class mediaDAO {
+public class MediaDAO {
     List<Media> mediaList = new ArrayList<Media>();
+
+private final Connection connection;
+
+    public MediaDAO(Connection connection) {
+        this.connection = connection;
+    }
 
     public void loadData() throws SQLException {
             try {
@@ -89,7 +96,36 @@ public List<Media> getMedia() throws SQLException {
         throw new RuntimeException(e);
     }
     }
+    public int getLoanPeriod(Media.MediaType mediaType) throws SQLException { //Hämtar lånperioden för de olika sorternas media
+        String sql = "SELECT getLoanPeriod(?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, String.valueOf(mediaType));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+            else throw new SQLException("getLoanPeriod returnerade inget.");
+        }
+    }
+    public Media getMediaById(int mediaId) throws SQLException {
+        String sql = "SELECT * FROM Media WHERE mediaId = ?";
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
+            ps.setInt(1, mediaId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("mediaId");
+                    String title = rs.getString("title");
+                    Media.MediaType mediaType = Media.MediaType.valueOf(rs.getString("mediaType"));
+                    Boolean partOfCourse = rs.getBoolean("partOfCourse");
+
+                    return new Media(id, title, mediaType, partOfCourse);
+                } else {
+                    return null;  // Eller kasta ett undantag om mediaId inte finns
+                }
+            }
+        }
+    }
 }
 //      Connection connection = null;
 //        PreparedStatement ps = null;

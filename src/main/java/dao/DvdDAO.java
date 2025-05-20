@@ -1,5 +1,9 @@
-package model;
+package dao;
 
+import model.Actor;
+import model.Category;
+import model.Dvd;
+import model.Media;
 import util.DatabaseConnection;
 
 

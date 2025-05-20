@@ -1,5 +1,8 @@
-package model;
+package dao;
 
+import model.Book;
+import model.Category;
+import model.Media;
 import util.DatabaseConnection;
 
 import java.sql.Connection;
@@ -17,7 +20,7 @@ public class BookDAO {
          this.categoryDao = categoryDao;
      }
 
-     public void loadBooks() {
+     public void loadBooks() throws SQLException {
          bookList = getAllBooks();
      }
 

@@ -1,5 +1,7 @@
-package model;
+package dao;
 
+import model.Journal;
+import model.Media;
 import util.DatabaseConnection;
 
 import java.sql.Connection;

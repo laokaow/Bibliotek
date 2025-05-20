@@ -1,5 +1,6 @@
-package model;
+package dao;
 
+import model.Actor;
 import util.DatabaseConnection;
 
 import java.sql.Connection;
