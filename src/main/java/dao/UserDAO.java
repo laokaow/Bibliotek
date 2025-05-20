@@ -12,6 +12,15 @@ public class UserDAO {
         this.connection = connection;
     }
 
+    public int getMaxLoanCount(String userType) throws SQLException { //Färdig funktion i MySQL som räknar ut lånmängden beroende på användartyp
+        String sql = "SELECT getMaxLoanCount(?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, userType);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+            else throw new SQLException("getMaxLoanCount returnerade inget.");
+        }
+    }
     public User authenticateUser(String email, String password) {
         String sql = "SELECT * FROM Users WHERE email = ?";
 

@@ -8,41 +8,24 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import dao.MediaDAO;
+import dao.UserDAO;
 
 public class LoanDAO {
     private final Connection connection;
     private final ReceiptDAO receiptDAO;
     private final UserDAO userDAO;
     private final CopyDAO copyDAO;
+    private final MediaDAO mediaDAO;
 
     public LoanDAO(Connection connection) throws SQLException {
         this.connection = connection;
         this.receiptDAO = new ReceiptDAO(this.connection); //ReceiptDAO använder samma connection objekt som LoanDAO
         this.userDAO = new UserDAO(this.connection);
         this.copyDAO = new CopyDAO(this.connection);
+        this.mediaDAO = new MediaDAO(this.connection);
     }
 
-    //Nedanstående kan flyttas till MediaDAO, eller CopyDAO för bättre objektorientering
-    private int getLoanPeriod(Media.MediaType mediaType) throws SQLException { //Hämtar lånperioden för de olika sorternas media
-        String sql = "SELECT getLoanPeriod(?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, String.valueOf(mediaType));
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) return rs.getInt(1);
-            else throw new SQLException("getLoanPeriod returnerade inget.");
-        }
-    }
-
-    //Nedanstående kan flyttas till UserDAO för bättre objekorientering
-    private int getMaxLoanCount(String userType) throws SQLException { //Färdig funktion i MySQL som räknar ut lånmängden beroende på användartyp
-        String sql = "SELECT getMaxLoanCount(?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, userType);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) return rs.getInt(1);
-            else throw new SQLException("getMaxLoanCount returnerade inget.");
-        }
-    }
 
     private int getUserLoanCount(int userId) throws SQLException { //Hämtar hur många aktiva lån en användare har
         String sql = "SELECT COUNT(*) FROM Loan WHERE userId = ? AND returnDate IS NULL";
@@ -59,7 +42,7 @@ public class LoanDAO {
 
         try {
             // Kontrollera att användaren inte har för många lön
-            int maxLoans = getMaxLoanCount(String.valueOf(user.getUserType()));
+            int maxLoans = userDAO.getMaxLoanCount(String.valueOf(user.getUserType()));
             int activeLoans = getUserLoanCount(user.getUserId());
             if (activeLoans >= maxLoans) {
                 throw new IllegalArgumentException("Du har redan max antal lån: " + maxLoans);
@@ -79,7 +62,7 @@ public class LoanDAO {
 
             // 1. Hämta låneperiod och räkna ut dueDate
             Media.MediaType mediaType = copy.getMediaType(); // t.ex. BOOK
-            int period = getLoanPeriod(mediaType);
+            int period = mediaDAO.getLoanPeriod(mediaType);
             LocalDate dueDate = borrowDate.plusDays(period);
 
             // 2. Skapa kvitto
