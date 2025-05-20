@@ -17,6 +17,13 @@ import java.util.List;
 public class DvdDAO {
    private ActorDAO actorDao;
    private CategoryDAO categoryDao;
+   private Connection connection;
+
+   public DvdDAO(ActorDAO actorDao, CategoryDAO categoryDao, Connection connection){
+       this.actorDao = actorDao;
+       this.categoryDao = categoryDao;
+       this.connection = connection;
+   }
 
     List<Dvd> dvdList;
     public DvdDAO(ActorDAO actorDao, CategoryDAO categoryDao) {

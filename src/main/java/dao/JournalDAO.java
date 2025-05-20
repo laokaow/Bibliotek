@@ -12,7 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JournalDAO {
+    private final Connection connection;
 
+    public JournalDAO(Connection connection){
+        this.connection = connection;
+    }
 
     public List<Journal> getAllJournals() {
         List<Journal> journals = new ArrayList<Journal>();

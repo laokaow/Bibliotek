@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookDAO {
+    private Connection connection;
      private CategoryDAO categoryDao;
      List<Book> bookList = new ArrayList<>();
 
-     public BookDAO(CategoryDAO categoryDao) {
+     public BookDAO(Connection connection, CategoryDAO categoryDao) {
+         this.connection = connection;
          this.categoryDao = categoryDao;
      }
 

@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryDAO {
+    private Connection connection;
+
+    public CategoryDAO(Connection connection){
+        this.connection = connection;
+    }
+
+
     List<Category> categoryList = new ArrayList<>();
     public List<Category> getAllCategories() throws SQLException {
        List<Category> categories = new ArrayList<>();

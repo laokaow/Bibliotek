@@ -12,6 +12,11 @@ import java.util.List;
 
 public class ActorDAO {
     List<Actor> actorList;
+    private Connection connection;
+
+    public ActorDAO(Connection connection){
+        this.connection = connection;
+    }
 
     public void  SaveActors() {
         actorList = getActors();
