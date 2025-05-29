@@ -74,6 +74,5 @@ public class RegisterController implements SceneManager.ControlledScene {
 
     @Override
     public void setData(Object data) {
-        // Ingen data behövs
     }
 }

@@ -62,6 +62,18 @@ public List<Media> getMedia() throws SQLException {
         }
         return results;
     }
+
+    public void deleteMedia(int mediaId) throws SQLException {
+        String sql = "DELETE FROM Media WHERE mediaId = ?";
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, mediaId);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Ingen media hittades med ID: " + mediaId);
+            }
+        }
+    }
     public List<Media> searchByTitle(String userInput) throws SQLException {
        List <Media> results = new ArrayList<>();
        for(Media media : mediaList) {
@@ -105,6 +117,24 @@ public List<Media> getMedia() throws SQLException {
             else throw new SQLException("getLoanPeriod returnerade inget.");
         }
     }
+
+    public void updatePartOfCourse(int mediaId, boolean partOfCourse) throws SQLException {
+        String sql = "UPDATE Media SET partOfCourse = ? WHERE mediaId = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setBoolean(1, partOfCourse);
+            stmt.setInt(2, mediaId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void insertMediaCategory(int mediaId, int categoryId) throws SQLException {
+        String sql = "INSERT INTO MediaCategory (mediaId, categoryId) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, mediaId);
+            stmt.setInt(2, categoryId);
+            stmt.executeUpdate();
+        }
+    }
     public Media getMediaById(int mediaId) throws SQLException {
         String sql = "SELECT * FROM Media WHERE mediaId = ?";
         try (Connection con = DatabaseConnection.getConnection();
@@ -115,7 +145,7 @@ public List<Media> getMedia() throws SQLException {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     int id = rs.getInt("mediaId");
-                    String title = rs.getString("title");
+                    String title = rs.getString("mediaName");
                     Media.MediaType mediaType = Media.MediaType.valueOf(rs.getString("mediaType"));
                     Boolean partOfCourse = rs.getBoolean("partOfCourse");
 
@@ -127,23 +157,3 @@ public List<Media> getMedia() throws SQLException {
         }
     }
 }
-//      Connection connection = null;
-//        PreparedStatement ps = null;
-//        ResultSet rs = null;
-//        try {
-//            connection = DatabaseConnection.getConnection();
-//            String sql2 = "SELECT * FROM media WHERE media_type LIKE ?";
-//             ps = connection.prepareStatement(sql2);
-//            ps.setString(1, "%" + userInput + "%");
-//            return null;
-//        }
-//        catch (SQLException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//        finally {
-//            if(ps != null) ps.close();
-//            if(connection != null) connection.close();
-//            if(rs != null) rs.close();
-//
-//        }

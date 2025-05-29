@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.AddJournalController"
+      spacing="10"><padding>
+    <Insets top="20" right="20" bottom="20" left="20"/>
+</padding>
+
+    <Label text="Lägg till Tidskrift" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Titel:" minWidth="120"/>
+        <TextField fx:id="mediaNameField" promptText="Tidskriftens namn"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Issue Number:" minWidth="120"/>
+        <TextField fx:id="issueNumberField" promptText="Nummer"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Del av kurs:" minWidth="120"/>
+        <CheckBox fx:id="partOfCourseCheckBox"/>
+    </HBox>
+
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Avbryt" onAction="#handleCancel"/>
+        <Button fx:id="saveButton" text="Spara" onAction="#handleSave"/>
+    </HBox>
+</VBox>

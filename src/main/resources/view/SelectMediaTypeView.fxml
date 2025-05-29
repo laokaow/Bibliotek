@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.SelectMediaTypeController"
+            prefHeight="400.0" prefWidth="600.0"
+            style="-fx-background-color: #f4f4f4;">
+    <children>
+        <VBox spacing="15" alignment="CENTER"
+              AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+            <Label text="Välj typ av media att lägga till"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Button text="Bok" onAction="#handleAddBook"
+                    maxWidth="200" minHeight="40"
+                    style="-fx-font-size: 14px;" />
+            <Button text="Tidsskrift" onAction="#handleAddJournal"
+                    maxWidth="200" minHeight="40"
+                    style="-fx-font-size: 14px;" />
+            <Button text="DVD" onAction="#handleAddDvd"
+                    maxWidth="200" minHeight="40"
+                    style="-fx-font-size: 14px;" />
+        </VBox>
+    </children>
+</AnchorPane>

@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 
 public class SceneManager {
 
@@ -17,7 +18,7 @@ public class SceneManager {
     }
 
     public interface ControlledScene {
-        void setData(Object data);
+        void setData(Object data) throws SQLException;
     }
 
     public static void showScene(String fxmlFile) {
@@ -46,6 +47,32 @@ public class SceneManager {
             primaryStage.show();
         } catch (IOException e) {
             throw new RuntimeException("Kunde inte ladda scen: " + fxmlFile, e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void openNewStage(String fxmlFile, String title, Object data) {
+        try {
+            URL resource = SceneManager.class.getResource("/view/" + fxmlFile);
+            if (resource == null) throw new RuntimeException("FXML hittades inte: " + fxmlFile);
+
+            FXMLLoader loader = new FXMLLoader(resource);
+            Parent root = loader.load();
+
+            Object controller = loader.getController();
+            if (controller instanceof ControlledScene && data != null) {
+                ((ControlledScene) controller).setData(data);
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.initOwner(primaryStage);
+            stage.show();
+        } catch (IOException e) {
+            throw new RuntimeException("Kunde inte öppna ny scen: " + fxmlFile, e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

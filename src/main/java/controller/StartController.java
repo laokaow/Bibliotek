@@ -28,10 +28,9 @@ public class StartController {
     @FXML private Button btnSeeMoreMedia;
     @FXML private Label lblFooter;
 
-    // Funktionalitet implementeras här
+
     @FXML
     private void initialize() {
-        // Exempel: fyll sökkategorier
         cmbSearchCategory.getItems().addAll("Böcker", "Media", "Evenemang");
     }
 }

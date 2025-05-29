@@ -15,6 +15,8 @@ public class DAOFactory {
     private static LoanDAO loanDAO;
     private static MediaDAO mediaDAO;
     private static ReceiptDAO receiptDAO;
+    private static MediaActorDAO mediaActorDAO;
+    private static MediaCategoryDAO mediaCategoryDAO;
 
     public static void init(Connection connection) throws SQLException {
         userDAO = new UserDAO(connection);
@@ -27,6 +29,8 @@ public class DAOFactory {
         loanDAO = new LoanDAO(connection);
         mediaDAO = new MediaDAO(connection);
         receiptDAO = new ReceiptDAO(connection);
+        mediaActorDAO = new MediaActorDAO(connection);
+        mediaCategoryDAO = new MediaCategoryDAO(connection);
     }
 
     public static UserDAO getUserDAO() {
@@ -67,5 +71,11 @@ public class DAOFactory {
 
     public static ReceiptDAO getReceiptDAO() {
         return receiptDAO;
+    }
+    public static MediaActorDAO getMediaActorDAO(){
+        return mediaActorDAO;
+    }
+    public static MediaCategoryDAO getMediaCategoryDAO(){
+        return mediaCategoryDAO;
     }
 }

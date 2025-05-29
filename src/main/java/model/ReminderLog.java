@@ -2,6 +2,8 @@ package model;
 
 import java.time.LocalDateTime;
 
+//Klass som ej används. Kommer att användas ifall ytterligare iterationer görs
+
 public class ReminderLog {
     private final int reminderId;
     private final User user;

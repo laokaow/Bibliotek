@@ -1,7 +1,7 @@
 package model;
 
 
-public class Actor { //IntelliJ förslår att göra detta till en record class
+public class Actor {
     private final int actorId;
     private final String firstName;
     private final String lastName;
@@ -22,4 +22,8 @@ public class Actor { //IntelliJ förslår att göra detta till en record class
     public String getLastName(){
         return lastName;
     }
+    public String getName(){
+        return firstName + " " + lastName;
+    }
+
 }

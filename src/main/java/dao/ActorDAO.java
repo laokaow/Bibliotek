@@ -3,10 +3,7 @@ package dao;
 import model.Actor;
 import util.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +18,7 @@ public class ActorDAO {
     public void  SaveActors() {
         actorList = getActors();
     }
+    //Nedan övervägas vilket connection som bör användas. Rimligast är nog den ovan deklarerade variabeln
     public List<Actor> getActors() {
         List<Actor> actors = new ArrayList<Actor>();
         String sql = "SELECT * FROM Actor";
@@ -29,7 +27,7 @@ public class ActorDAO {
              ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()) {
-                int actorId = rs.getInt("id");
+                int actorId = rs.getInt("actorId");
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
 
@@ -90,47 +88,77 @@ public class ActorDAO {
         }
         return searchedAuthor;
     }
-    public List<Actor> searchAuthor(String firstName, String lastName) throws SQLException {
-        List<Actor> searchedAuthor = new ArrayList<>();
-        String sql = "SELECT * FROM Actor WHERE firstName = ? AND lastName = ?";
-        try (Connection con = DatabaseConnection.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, firstName);
-            ps.setString(2, lastName);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int actorId = rs.getInt("actorId");
-                String fName = rs.getString("firstName");
-                String lName = rs.getString("lastName");
 
-                Actor actor = new Actor(
-                        actorId,
-                        fName,
-                        lName
-                );
-                searchedAuthor.add(actor);
-
+    public Actor findByName(String firstName, String lastName) throws SQLException {
+        String sql = "SELECT actorId, firstName, lastName FROM Actor WHERE firstName = ? AND lastName = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, capitalize(firstName));
+            stmt.setString(2, capitalize(lastName));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Actor(rs.getInt("actorId"), rs.getString("firstName"), rs.getString("lastName"));
+                } else {
+                    return null;
+                }
             }
         }
-        return searchedAuthor;
-
     }
 
-    public Actor addActor(Actor actor) throws SQLException {
-
+    // Hjälpmetod för att säkerställa stor första bokstav
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+    public void addActorToMedia(int mediaId, String actorName) throws SQLException {
+        String sql = "INSERT INTO MediaActor (mediaId, actorName) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, mediaId);
+            stmt.setString(2, actorName);
+            stmt.executeUpdate();
+        }
+    }
+    public int addActor(Actor actor) throws SQLException {
         String sql = "INSERT INTO Actor (firstName, lastName) VALUES (?, ?)";
-        try(Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement(sql)
-        )
-        {
-            ps.setString(1, actor.getFirstName());
-            ps.setString(2, actor.getLastName());
-            ps.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, capitalize(actor.getFirstName()));
+            stmt.setString(2, capitalize(actor.getLastName()));
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                } else {
+                    throw new SQLException("Misslyckades hämta genererat actorId.");
+                }
+            }
         }
-        catch(SQLException e) {
-            e.printStackTrace();
-            System.out.println("Error adding actor, try again");
+    }
+
+    public void addActorToMedia(int mediaId, int actorId) throws SQLException {
+        String sql = "INSERT INTO MediaActor (mediaId, actorId) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, mediaId);
+            stmt.setInt(2, actorId);
+            stmt.executeUpdate();
         }
-        return actor;
+    }
+
+    //Nästan samma som addActor. Returnerar annat dock
+    public Actor addActorAndReturn(Actor actor) throws SQLException {
+        String sql = "INSERT INTO Actor (firstName, lastName) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, capitalize(actor.getFirstName()));
+            stmt.setString(2, capitalize(actor.getLastName()));
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int actorId = rs.getInt(1);
+                    return new Actor(actorId, actor.getFirstName(), actor.getLastName());
+                } else {
+                    throw new SQLException("Misslyckades hämta genererat actorId.");
+                }
+            }
+        }
     }
 }

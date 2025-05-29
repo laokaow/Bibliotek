@@ -94,6 +94,7 @@ public class BookDAO {
          return results;
      }
 
+
      public void addBook(Book book) throws SQLException {
          String sql = "INSERT INTO Media (mediaName, mediaType, author, isbn, pageCount, partOfCourse) VALUES (?, ?, ?, ?, ?, ?)";
          try(Connection con = DatabaseConnection.getConnection();

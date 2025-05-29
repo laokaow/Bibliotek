@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.AddDvdController">
+
+    <Label text="Lägg till DVD" style="-fx-font-size: 18px; -fx-font-weight: bold"/>
+
+    <TextField fx:id="mediaNameField" promptText="Titel"/>
+    <TextField fx:id="durationField" promptText="Speltid (minuter)"/>
+    <TextField fx:id="ageLimitField" promptText="Åldersgräns"/>
+    <TextField fx:id="productionCountryField" promptText="Produktionsland"/>
+    <TextField fx:id="directorField" promptText="Regissör"/>
+
+    <HBox spacing="10">
+        <Label text="Kurslitteratur:"/>
+        <CheckBox fx:id="partOfCourseCheckBox"/>
+    </HBox>
+
+    <Label text="Välj kategorier:"/>
+    <VBox fx:id="categoryCheckboxContainer" spacing="5"/>
+
+    <Label text="Skådespelare:"/>
+    <HBox spacing="5">
+        <TextField fx:id="actorNameField" promptText="Namn på skådespelare"/>
+        <Button text="Lägg till" onAction="#handleAddActor"/>
+    </HBox>
+    <ListView fx:id="actorListView" prefHeight="100"/>
+
+    <Button text="Lägg till DVD" onAction="#handleAddDvd"/>
+</VBox>

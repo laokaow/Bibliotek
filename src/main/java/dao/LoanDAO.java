@@ -1,5 +1,7 @@
 package dao;
 
+import controller.UserLoanInfo;
+import dto.LoanDTO;
 import javafx.util.converter.LocalDateStringConverter;
 import model.*;
 
@@ -60,12 +62,12 @@ public class LoanDAO {
                 throw new IllegalStateException("Exemplaret är inte tillgängligt.");
             }
 
-            // 1. Hämta låneperiod och räkna ut dueDate
+
             Media.MediaType mediaType = copy.getMediaType(); // t.ex. BOOK
             int period = mediaDAO.getLoanPeriod(mediaType);
             LocalDate dueDate = borrowDate.plusDays(period);
 
-            // 2. Skapa kvitto
+
             String info = "Lån av exemplar ID: " +
                     copy.getCopyId() +
                     ", titel: " +
@@ -201,6 +203,44 @@ public class LoanDAO {
         return loans;
     }
 
+    private Loan mapResultSetToLoan(ResultSet rs) throws SQLException {
+        int loanId = rs.getInt("loanId");
+        int userId = rs.getInt("userId");
+        int copyId = rs.getInt("copyId");
+        int receiptId = rs.getInt("receiptId");
+        LocalDate borrowDate = rs.getDate("borrowDate").toLocalDate();
+        Date returnDateSql = rs.getDate("returnDate");
+        LocalDate returnDate = returnDateSql != null ? returnDateSql.toLocalDate() : null;
+        Date dueDateSql = rs.getDate("dueDate");
+        LocalDate dueDate = dueDateSql != null ? dueDateSql.toLocalDate() : null;
+
+        User user = userDAO.getUserById(userId);
+        Copy copy = copyDAO.getCopyById(copyId);
+
+        // Anpassa till din konstruktor (se till att argumenten passar)
+        return new Loan(loanId, user, copy, receiptId, returnDate, borrowDate, dueDate);
+    }
+    //Nedanstående skapad för att inte behöva ändra i model.Loan
+    public List<LoanDTO> getLoanDTOsByUserId(int userId) {
+        List<LoanDTO> loanDTOs = new ArrayList<>();
+        String sql = "SELECT l.*, m.mediaName AS mediaName " +
+                "FROM Loan l " +
+                "JOIN Copy c ON l.copyId = c.copyId " +
+                "JOIN Media m ON c.mediaId = m.mediaId " +
+                "WHERE l.userId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Loan loan = mapResultSetToLoan(rs);
+                String mediaTitle = rs.getString("mediaTitle");
+                loanDTOs.add(new LoanDTO(loan, mediaTitle));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return loanDTOs;
+    }
     public List<Loan> getDueSoonLoansForUser(int userId) throws SQLException {
         String sql = "SELECT * FROM DueSoonLoansView WHERE userId = ?";
         List<Loan> loans = new ArrayList<>();
@@ -249,18 +289,30 @@ public class LoanDAO {
         return loans;
     }
 
+    public List<UserLoanInfo> getActiveLoansWithMediaTitleByUserId(int userId) {
+        List<UserLoanInfo> loans = new ArrayList<>();
+        String sql = """
+        SELECT m.title, l.dueDate
+        FROM Loan l
+        JOIN Media m ON l.mediaId = m.mediaId
+        WHERE l.userId = ? AND l.returnDate IS NULL
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String title = rs.getString("title");
+                LocalDate dueDate = rs.getDate("dueDate").toLocalDate();
+                String status = dueDate.isBefore(LocalDate.now()) ? "Försenad" : "Aktiv";
+                loans.add(new UserLoanInfo(title, dueDate, status));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return loans;
+    }
+
 }
 
-
-
-
-//getLoansByUserId -- Vy av aktiva lån
-//getOverDueLoans -- Hämta färdigt från SQL
-//viewLoans?
-
-//Användare trycker på lån
-//Programmet måste skapa ett lån, ett kvitto. Både uppdatera i databasen och presentera för användare
-//Säkerställa att Copy är tillgänglig och ändra availabilityStatus
-//Kontrollera funktioner från databasen så att mediaTyp får en lånelängd
-//Och så att användaren inte lånar för många saker
-//Kvittot med relevant information skrivs ut

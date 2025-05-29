@@ -18,36 +18,22 @@ public class CategoryDAO {
     }
 
 
-    List<Category> categoryList = new ArrayList<>();
     public List<Category> getAllCategories() throws SQLException {
-       List<Category> categories = new ArrayList<>();
-        Connection con = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        String sql = "select * from Category";
-    try {
-        con = DatabaseConnection.getConnection();
-        preparedStatement = con.prepareStatement(sql);
-        resultSet = preparedStatement.executeQuery();
-        while (resultSet.next()) {
-            Category category = new Category(
-                    resultSet.getInt("categoryId"),
-                    resultSet.getString("categoryName")
-            );
-            categories.add(category);
-        }
-    }
-    catch (SQLException e) {
-        e.printStackTrace();
-    }
-    finally {
-          if(resultSet != null) resultSet.close();
-          if(preparedStatement != null) preparedStatement.close();
-          if(con != null) con.close();
+        List<Category> categories = new ArrayList<>();
+        String sql = "SELECT categoryId, categoryName FROM Category";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("categoryId");
+                String name = rs.getString("categoryName");
+                categories.add(new Category(id, name));
+            }
         }
 
-    return categories;
+        return categories;
     }
+
 
     public List<Category> getAllCategoriesByMediaId(int mediaId) throws SQLException {
         List<Category> categories = new ArrayList<>();

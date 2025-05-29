@@ -1,16 +1,14 @@
 package bibliotek;
-import controller.SceneManager;
 
+import controller.SceneManager;
 import dao.DAOFactory;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import util.DatabaseConnection;
 
-import java.sql.SQLException;
+import java.util.Objects;
+
 
 public class MainApp extends Application {
 
@@ -18,7 +16,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception{
 
         try {
-            // Skapa en gemensam databasanslutning
+            // Gemensam databasanslutning
             DAOFactory.init(
                     DatabaseConnection.getConnection()
             );
@@ -30,8 +28,10 @@ public class MainApp extends Application {
         try {
             SceneManager.setStage(primaryStage);
             SceneManager.showMainView();
-            primaryStage.setTitle("Bibliotek.se");
-            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/icon.png")));
+            primaryStage.setTitle("Norrbottens Bibliotek");
+            //Objects.requireNonNull för att ta bort varning
+            //Vid iterationer på koden så krävs felhantering
+            primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/view/icon.png"))));
         } catch (Exception e) {
             e.printStackTrace();
         }

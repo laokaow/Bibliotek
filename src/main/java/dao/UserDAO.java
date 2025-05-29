@@ -3,6 +3,9 @@ package dao;
 import model.User;
 import model.User.UserType;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import util.PasswordUtil;
 
 public class UserDAO {
@@ -182,7 +185,30 @@ public class UserDAO {
                     return false;
         }
     }
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT userId, firstName, lastName, email, phoneNumber, userType FROM Users";
 
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("userId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber"),
+                        null, // pinCode ska inte visas
+                        UserType.valueOf(rs.getString("userType"))
+                );
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
 
     public boolean updatePinCode(String pinCode, int userId){
         String hashedPinCode = PasswordUtil.hashPassword(pinCode); //Hämtar

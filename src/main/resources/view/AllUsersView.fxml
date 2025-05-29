@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.AllUsersController" prefWidth="600" prefHeight="400">
+
+    <center>
+        <TableView fx:id="userTable" prefHeight="350">
+            <columns>
+                <TableColumn text="ID" fx:id="idCol" prefWidth="50"/>
+                <TableColumn text="Förnamn" fx:id="firstNameCol" prefWidth="100"/>
+                <TableColumn text="Efternamn" fx:id="lastNameCol" prefWidth="100"/>
+                <TableColumn text="E-post" fx:id="emailCol" prefWidth="150"/>
+                <TableColumn text="Telefon" fx:id="phoneCol" prefWidth="100"/>
+                <TableColumn text="Typ" fx:id="userTypeCol" prefWidth="100"/>
+                <TableColumn fx:id="loanCountCol" text="Aktiva lån" prefWidth="100"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10">
+            <Button text="Stäng" onAction="#handleClose" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import model.User;
 import service.LoginService;
+import util.SessionManager;
 
 public class LoginController implements SceneManager.ControlledScene {
 
@@ -36,10 +37,14 @@ public class LoginController implements SceneManager.ControlledScene {
 
         User user = loginService.login(email, pin);
         if (user != null) {
-            System.out.println("Inloggad som: " + user.getUserType());
-            // TODO: Byt scen här med SceneManager.showXView()
+            SessionManager.setLoggedInUser(user);
+            if (user.getUserType() == User.UserType.STAFF) {
+                SceneManager.showScene("StaffView.fxml", user);
+            } else {
+                SceneManager.showScene("CustomerView.fxml", user);
+            }
         } else {
-            showError("Fel e-post eller PIN-kod.");
+            showError("Fel e-post eller lösenord.");
         }
     }
 
@@ -62,6 +67,5 @@ public class LoginController implements SceneManager.ControlledScene {
 
     @Override
     public void setData(Object data) {
-        // Ingen data behövs här
     }
 }

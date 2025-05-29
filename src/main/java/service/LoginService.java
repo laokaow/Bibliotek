@@ -3,6 +3,7 @@ package service;
 import dao.UserDAO;
 import model.User;
 
+//Service-klass för login
 public class LoginService {
     private final UserDAO userDAO;
 

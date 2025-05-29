@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.LoanOverviewController" spacing="10" alignment="CENTER">
+    <Label text="Dina aktiva lån" style="-fx-font-size: 18;" />
+    <ListView fx:id="loansListView" prefWidth="300" prefHeight="200"/>
+    <Button text="Tillbaka" onAction="#handleBack"/>
+</VBox>
