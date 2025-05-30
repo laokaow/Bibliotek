@@ -7,7 +7,7 @@ public class Book extends Media{
     private final String author;
     private final String isbn;
     private final int pageCount;
-     List<Category> category = new ArrayList<Category>();
+    List<Category> category = new ArrayList<Category>();
 
     public Book(int mediaId, String mediaName, MediaType mediaType, boolean partOfCourse, String author, String isbn, int pageCount, List<Category> category){
         super(mediaId, mediaName, mediaType.BOOK, partOfCourse);
@@ -33,7 +33,8 @@ public class Book extends Media{
         return category;
     }
     public void addCategory(Category category){
-        this.category.add(category);
+        if(category != null && this.category.stream().noneMatch(c -> c.getCategoryId() == category.getCategoryId())) {
+            this.category.add(category);
+        }
     } //Borde dokumentera tydligare, minns inte varför denna addCategory gjordes. Kan det vara för att det är en ArrayList?
 }
-

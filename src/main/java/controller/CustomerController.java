@@ -27,7 +27,7 @@ public class CustomerController implements SceneManager.ControlledScene {
 
     @FXML
     private void handleSearchMedia() {
-        SceneManager.showScene("SearchView.fxml", currentUser);
+        SceneManager.showScene("Main.fxml", currentUser);
     }
 
     @FXML

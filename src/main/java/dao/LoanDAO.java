@@ -29,7 +29,7 @@ public class LoanDAO {
     }
 
 
-    private int getUserLoanCount(int userId) throws SQLException { //Hämtar hur många aktiva lån en användare har
+    public int getUserLoanCount(int userId) throws SQLException { //Hämtar hur många aktiva lån en användare har
         String sql = "SELECT COUNT(*) FROM Loan WHERE userId = ? AND returnDate IS NULL";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, userId);

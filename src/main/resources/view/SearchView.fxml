@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Button?>
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SearchResultsController">
+
+
+
+    <VBox spacing="10">
+        <HBox spacing="5">
+            <Label fx:id="lblTitle" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Label fx:id="lblId" style="-fx-text-fill: #78909C;" />
+        </HBox>
+
+        <Label fx:id="lblAuthorOrDirector" wrapText="true" style="-fx-font-size: 14px;" />
+        <FlowPane fx:id="categoryTags" hgap="5" vgap="5" style="-fx-padding: 5;">
+        </FlowPane>
+
+        <Button fx:id="btnLoan" text="Låna" style="-fx-background-color: #81C784; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-weight: bold;"/>
+    </VBox>
+</AnchorPane>

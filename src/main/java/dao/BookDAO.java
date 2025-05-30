@@ -3,7 +3,6 @@ package dao;
 import model.Book;
 import model.Category;
 import model.Media;
-import util.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,94 +10,141 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class BookDAO {
     private Connection connection;
-     private CategoryDAO categoryDao;
-     List<Book> bookList = new ArrayList<>();
+    private CategoryDAO categoryDao;
 
-     public BookDAO(Connection connection, CategoryDAO categoryDao) {
-         this.connection = connection;
-         this.categoryDao = categoryDao;
-     }
+    public BookDAO(Connection connection, CategoryDAO categoryDao) {
+        this.connection = connection;
+        this.categoryDao = categoryDao;
+    }
 
-     public void loadBooks() throws SQLException {
-         bookList = getAllBooks();
-     }
+    private Book buildBook(ResultSet rs) throws SQLException {
+        return new Book(
+                rs.getInt("mediaId"),
+                rs.getString("mediaName"),
+                Media.MediaType.valueOf(rs.getString("mediaType").toUpperCase()),
+                rs.getBoolean("partOfCourse"),
+                rs.getString("author"),
+                rs.getString("isbn"),
+                rs.getInt("pageCount"),
+                new ArrayList<>()
+        );
+    }
+    private void addCategory(ResultSet rs, Book book) throws SQLException {
+        int categoryId = rs.getInt("categoryId");
+        String categoryName = rs.getString("categoryName");
 
-     public List<Book> getAllBooks() throws SQLException {
-        String sql = "select * from Media where mediaType = 'Book'";
-         List<Book> books = new ArrayList<>();
-         Connection con = null;
-         PreparedStatement preparedStatement = null;
-         ResultSet resultSet = null;
+        if (categoryId != 0 && categoryName != null) {
+            Category category = new Category(categoryId, categoryName);
+            book.addCategory(category);
+        }
+    }
+
+    public List<Book> getAllBooks() throws SQLException {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT m.mediaId, m.mediaName, m.mediaType, m.partOfCourse, " +
+                "m.author, m.ISBN, m.pageCount, " +
+                "c.categoryId, c.categoryName " +
+                "FROM Media m " +
+                "LEFT JOIN MediaCategory mc ON m.mediaId = mc.mediaId " +
+                "LEFT JOIN Category c ON mc.categoryId = c.categoryId " +
+                "WHERE m.mediaType = 'Book' " +
+                "ORDER BY m.mediaId";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            Map<Integer, Book> bookMap = new TreeMap<>();
+            while (resultSet.next()) {
+                int mediaId = resultSet.getInt("mediaId");
+                Book book = bookMap.get(mediaId);
+
+                if(book == null) {
+                    book = buildBook(resultSet);
+                    bookMap.put(mediaId, book);
+                }
+                int categoryId = resultSet.getInt("categoryId");
+                String categoryName = resultSet.getString("categoryName");
+
+                if(categoryId != 0 && categoryName != null) {
+                    Category category = new Category(categoryId, categoryName);
+                    book.addCategory(category);
+                }
+
+            }
+            books.addAll(bookMap.values());
+        }
+        return books;
+    }
+
+    public List<Book> searchByAuthor(String userInput) throws SQLException {
+        List<Book> results = new ArrayList<>();
+        String sql = "SELECT * FROM Media WHERE LOWER(author) LIKE ? AND mediaType = 'Book'";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, "%" + userInput.toLowerCase() + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Book book = buildBook(rs);
+
+                List<Category> categories = categoryDao.getAllCategoriesByMediaId(book.getMediaId());
+                if (categories != null) {
+                    book.setCategories(categories);
+                }
+
+                results.add(book);
+            }
+
+        }
+
+        return results;
+    }
+    public List<Book> searchByBookName(String userInput) throws SQLException {
+        List<Book> results = new ArrayList<>();
+        String sql ="SELECT * FROM Media WHERE LOWER(mediaName) LIKE ? AND mediaType = 'BOOK'";
+
+        try(PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, "%" + userInput.toLowerCase() + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Book book = buildBook(rs);
+                results.add(book);
+
+            }
+        }
+        return results;
+    }
 
 
-         try {
-             con = DatabaseConnection.getConnection();
-             preparedStatement = con.prepareStatement(sql);
-             resultSet = preparedStatement.executeQuery();
-             Book currentBook = null;
-             while (resultSet.next()) {
+    public List<Book> searchByISBN(String isbnInput) throws SQLException {
+        List<Book> results = new ArrayList<>();
+        String sql = "SELECT * FROM Media WHERE LOWER(ISBN) LIKE ? AND mediaType = 'Book'";
 
-                 int mediaId = resultSet.getInt("mediaId");
-                 String mediaName = resultSet.getString("mediaName");
-                 Media.MediaType mediaType = Media.MediaType.valueOf(resultSet.getString("mediaType").toUpperCase());
-                 boolean partOfCourse = resultSet.getBoolean("partOfCourse");
-                 String author = resultSet.getString("author");
-                 String isbn = resultSet.getString("ISBN");
-                 int pageCount = resultSet.getInt("pageCount");
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, "%" + isbnInput.toLowerCase() + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Book book = buildBook(rs);
 
+                    List<Category> categories = categoryDao.getAllCategoriesByMediaId(book.getMediaId());
+                    if (categories != null) {
+                        book.setCategories(categories);
+                    }
 
+                    results.add(book);
+                }
+            }
+        }
 
-                     currentBook = new Book(
-                             mediaId,
-                             mediaName,
-                             mediaType,
-                             partOfCourse,
-                             author,
-                             isbn,
-                             pageCount,
-                             new ArrayList<>()
-                     );
-                     // koden nedanför hanterar böckers kategorier och ser till att .getAllCategoriesByMediaId() inte retunerar null
-                   List <Category> categories = categoryDao.getAllCategoriesByMediaId(mediaId);
-                   if(categories != null) {
-                       currentBook.setCategories(categories);
-                   }
-                    books.add(currentBook);
-                 }
-
-                 //currentBook.getCategories().add(category);
-             }
-
-         catch (SQLException e) {
-             e.printStackTrace();
-             System.out.println("SQL error");
-         } finally {
-             if (resultSet != null) resultSet.close();
-             if (preparedStatement != null) preparedStatement.close();
-             if (con != null) con.close();
-         }
-         return books;
-
-     }
-
-     public List<Book> searchByAuthor (String userInput) throws SQLException {
-         List<Book> results = new ArrayList<>();
-         for (Book book : bookList) {
-                 if (book.getAuthor() != null && book.getAuthor().equals(userInput)) {
-                     results.add(book);
-             }
-         }
-         return results;
-     }
-
+        return results;
+    }
 
      public void addBook(Book book) throws SQLException {
          String sql = "INSERT INTO Media (mediaName, mediaType, author, isbn, pageCount, partOfCourse) VALUES (?, ?, ?, ?, ?, ?)";
-         try(Connection con = DatabaseConnection.getConnection();
-            PreparedStatement stmt = con.prepareStatement(sql)) {
+         try(PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, book.getMediaName());
                 stmt.setString(2, book.getMediaType().toString());
                 stmt.setString(3, book.getAuthor());
@@ -111,33 +157,5 @@ public class BookDAO {
          catch(SQLException e) {
              e.printStackTrace();
          }
-     }
- }
-//     Book book = new Book(
-//                        resultSet.getInt("mediaId"),
-//                        resultSet.getString("name"),
-//                        Media.MediaType.valueOf(resultSet.getString("mediaType").toUpperCase()),
-//                        resultSet.getBoolean("partOfCourse"),
-//                        resultSet.getString("author"),
-//                        resultSet.getString("ISBN"),
-//                        resultSet.getInt("pageCount"),
-//
-//
-//
-//                );
-
-
-// String sql = "SELECT\n" +
-//                 "    m.mediaId,\n" +
-//                 "    m.mediaName,\n" +
-//                 "    m.mediaType,\n" +
-//                 "    m.author,\n" +
-//                 "    m.isbn,\n" +
-//                 "    m.pageCount,\n" +
-//                 "    m.partOfCourse,\n" +
-//                 "    c.categoryId,\n" +
-//                 "    c.categoryName\n" +
-//                 "FROM Media m\n" +
-//                 "JOIN MediaCategory mc ON m.mediaId = mc.mediaId\n" +
-//                 "JOIN Category c ON mc.category = c.categoryId\n" +
-//                 "WHERE mediaType = 'BOOK';\n";
+    }
+}

@@ -19,49 +19,6 @@ private final Connection connection;
         this.connection = connection;
     }
 
-    public void loadData() throws SQLException {
-            try {
-                mediaList = getMedia();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-    }
-public List<Media> getMedia() throws SQLException {
-    List<Media> list = new ArrayList<Media>();
-    Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-    String sql = "select * from Media";
-    try {
-        con = DatabaseConnection.getConnection();
-        ps = con.prepareStatement(sql);
-        rs = ps.executeQuery();
-
-        while (rs.next()) {
-            Media media = new Media(
-                    rs.getInt("mediaId"),
-                    rs.getString("mediaName"),
-                    Media.MediaType.valueOf(rs.getString("mediaType").toUpperCase()),
-                    rs.getBoolean("partOfCourse")
-            );
-            list.add(media);
-        }
-    }
-    catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return list;
-}
-    public List<Media> searchMedia(String userInput) {
-        List<Media> results = new ArrayList<>();
-        for(Media media : mediaList) {
-            if(media.getMediaName().toLowerCase().contains(userInput.toLowerCase())) {
-                results.add(media);
-            }
-        }
-        return results;
-    }
 
     public void deleteMedia(int mediaId) throws SQLException {
         String sql = "DELETE FROM Media WHERE mediaId = ?";
@@ -74,40 +31,49 @@ public List<Media> getMedia() throws SQLException {
             }
         }
     }
-    public List<Media> searchByTitle(String userInput) throws SQLException {
-       List <Media> results = new ArrayList<>();
-       for(Media media : mediaList) {
-           if(media.getMediaName().toLowerCase().contains(userInput.toLowerCase())) {
-               results.add(media);
-           }
-    }
-       return results;
+    //Gammalt implementerad metod
+    //Den får ligga kvar för att visa att mer än ett sätt funkar
+    public List<Media> getMedia() throws SQLException {
+        List<Media> list = new ArrayList<Media>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "select * from Media";
+        try {
+            con = DatabaseConnection.getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
 
-    }
-    public List<Media> searchByType(String userInput) throws SQLException {
-    List <Media> results = new ArrayList<>();
-    for(Media media : mediaList) {
-        if(media.getMediaType().toString().toLowerCase().contains(userInput.toLowerCase())) {
-            results.add(media);
+            while (rs.next()) {
+                Media media = new Media(
+                        rs.getInt("mediaId"),
+                        rs.getString("mediaName"),
+                        Media.MediaType.valueOf(rs.getString("mediaType").toUpperCase()),
+                        rs.getBoolean("partOfCourse")
+                );
+                list.add(media);
+            }
         }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
-    return results;
+    public List<Media> searchMedia(String userInput) {
+        List<Media> results = new ArrayList<>();
+        String sql = "select * from Media where mediaName like ?";
+        try( PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, "%" + userInput.toLowerCase() + "%" );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return results;
     }
 
-    public List<Media> searchByCategory(String userInput) throws SQLException {
-    Connection connection = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-    try {
-            String sql = "SELECT * FROM media WHERE media_category LIKE ?";
-            connection = DatabaseConnection.getConnection();
-            ps = connection.prepareStatement(sql);
-             ps.setString(1, "%" + userInput + "%");
-        return null;
-    } catch (SQLException e) {
-        throw new RuntimeException(e);
-    }
-    }
     public int getLoanPeriod(Media.MediaType mediaType) throws SQLException { //Hämtar lånperioden för de olika sorternas media
         String sql = "SELECT getLoanPeriod(?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -137,8 +103,7 @@ public List<Media> getMedia() throws SQLException {
     }
     public Media getMediaById(int mediaId) throws SQLException {
         String sql = "SELECT * FROM Media WHERE mediaId = ?";
-        try (Connection con = DatabaseConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)){
 
             ps.setInt(1, mediaId);
 
