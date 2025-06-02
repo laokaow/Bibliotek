@@ -21,6 +21,12 @@ public class CustomerController implements SceneManager.ControlledScene {
             }
         }
     }
+    @FXML
+    private void handleOverDueLoans() {
+        if(currentUser != null) {
+            SceneManager.showScene("OverDueLoansView.fxml", currentUser);
+        }
+    }
 
     @FXML
     private void handleViewLoans() {

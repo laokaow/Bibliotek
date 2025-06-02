@@ -11,6 +11,7 @@
         <VBox spacing="10" alignment="CENTER" style="-fx-padding: 20;">
             <Label fx:id="welcomeLabel" style="-fx-font-size: 16;" /> <!--Dynamiskt kan visa vilken användare som är inloggad-->
             <Button text="Visa Aktiva Lån" onAction="#handleViewLoans"/>
+            <Button text="Visa förfallna lån" onAction="#handleOverDueLoans"/>
             <Button text="Sök Media" onAction="#handleSearchMedia"/>
             <Button text="Logga ut" onAction="#handleLogout"/>
         </VBox>
