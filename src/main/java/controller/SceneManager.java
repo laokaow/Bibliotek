@@ -4,6 +4,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.User;
+import util.SessionManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -88,7 +90,17 @@ public class SceneManager {
         showScene("RegisterView.fxml");
     }
 
-    public static void showProfileView(Object userData) {
-        showScene("ProfileView.fxml", userData);
+    public static void showProfileView() {
+        User user = SessionManager.getLoggedInUser();
+        if (user == null) {
+            System.out.println("Ingen användare är inloggad.");
+            return;
+        }
+
+        if (user.getUserType() == User.UserType.STAFF) {
+            showScene("StaffView.fxml", user);
+        } else {
+            showScene("CustomerView.fxml", user);
+        }
     }
 }

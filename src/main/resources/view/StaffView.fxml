@@ -9,11 +9,12 @@
 
     <center>
         <VBox spacing="20" alignment="CENTER" style="-fx-padding: 20">
-            <Label text="Välkommen, personal!" style="-fx-font-size: 16;" />
+            <Label fx:id="welcomeLabel" style="-fx-font-size: 16;" /> <!--Dynamiskt kan visa vilken användare som är inloggad-->
             <HBox spacing="15" alignment="CENTER">
                 <Button text="Lägg till Media" onAction="#handleAddMedia" />
                 <Button text="Hantera Media" onAction="#handleManageMedia" />
                 <Button text="Lista över alla användare" onAction="#handleGetUsers" />
+                <Button text="Sök Media" onAction="#handleSearchMedia"/>
                 <Button text="Logga ut" onAction="#handleLogout" />
             </HBox>
         </VBox>

@@ -6,10 +6,7 @@ import model.Dvd;
 import model.Media;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DvdDAO {
     private final ActorDAO actorDao;
@@ -130,14 +127,6 @@ public class DvdDAO {
                     }
                     // lägger till kategorier och skådespelare till dvd:en
                     addCategoryAndActorToDvd(rs, dvd);
-                    /**
-                     * hämtar categoryId:et från rs.Om resultsetet returnerade något dvs notNull och att categoryId inte är 0
-                     * Så skapas ett nytt category objekt.
-                     * Om den nya kategorin/genre inte matchar med en redan existerande kategori i objektet,
-                     * lägg då till den till dvd:en. Annars gör inget.
-                     */
-
-
                 }
                 // lägger till alla dvd in i results arrayListan. Kommer bara vara unika DVD objekt.
                 results.addAll(dvdMap.values());
@@ -148,6 +137,41 @@ public class DvdDAO {
         }
     }
 
+    public List<Dvd> searchDvdByActorName(String actorName) throws SQLException {
+        List<Dvd> results = new ArrayList<>();
+        String sql = "SELECT m.mediaId, m.mediaName, m.mediaType, m.partOfCourse, m.ageLimit, " +
+                "m.productionCountry, m.director, m.duration, " +
+                "a.actorId, a.firstName, a.lastName, " +
+                "c.categoryId, c.categoryName " +
+                "FROM Media m " +
+                "LEFT JOIN MediaActor ma ON m.mediaId = ma.mediaId " +
+                "LEFT JOIN Actor a ON ma.actorId = a.actorId " +
+                "LEFT JOIN MediaCategory mc ON m.mediaId = mc.mediaId " +
+                "LEFT JOIN Category c ON mc.categoryId = c.categoryId " +
+                "WHERE m.mediaType = 'DVD' AND (LOWER(a.firstName) LIKE ? OR LOWER(a.lastName) LIKE ?) " +
+                "ORDER BY m.mediaId";
+
+        try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, "%" + actorName + "%");
+            stmt.setString(2, "%" + actorName + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                Map<Integer, Dvd> dvdMap = new HashMap<>();
+                while (rs.next()) {
+                    int mediaId = rs.getInt("mediaId");
+                    Dvd dvd = dvdMap.get(mediaId);
+                    if (dvd == null) {
+                        dvd = buildDvd(rs);
+                        dvdMap.put(mediaId, dvd);
+                    }
+                    addCategoryAndActorToDvd(rs, dvd);
+                }
+                results.addAll(dvdMap.values());
+                results.sort(Comparator.comparing(Dvd::getMediaName));
+
+            }
+        }
+        return results;
+    }
     public List<Dvd> searchByDirector (String director) throws SQLException {
         List<Dvd> results = new ArrayList<>();
         String sql = "SELECT m.mediaId, m.mediaName, m.mediaType, m.partOfCourse, m.ageLimit, " +
@@ -176,6 +200,7 @@ public class DvdDAO {
                     addCategoryAndActorToDvd(rs, dvd);
                 }
                 results.addAll(dvdDirectorMap.values());
+                results.sort(Comparator.comparing(Dvd::getMediaName));
             }
 
         }

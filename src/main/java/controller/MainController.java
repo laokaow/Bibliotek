@@ -84,8 +84,14 @@ public class MainController implements SceneManager.ControlledScene {
     private Label lblFooter;
     @FXML
     private VBox vboxResults;
+
+    @FXML private Button loginButton;
+
+    @FXML private Button registerButton;
+
     @FXML
     private void initialize() {
+        updateAuthButtons();
         try {
             Connection connection = DatabaseConnection.getConnection();
             DAOFactory.init(connection);
@@ -115,13 +121,17 @@ public class MainController implements SceneManager.ControlledScene {
                 "Längd",
                 "Kategori",
                 "Skådespelare",
-                "MediaCopy",
-                "Titel",
+                "CopyStatus",
                 "Regissör"
         );
     }
     public User getCurrentUser() {
         return this.currentUser;
+    }
+    public void updateAuthButtons() {
+        boolean loggedIn = util.SessionManager.isLoggedIn();
+        loginButton.setVisible(!loggedIn);
+        registerButton.setVisible(!loggedIn);
     }
 
     private void displayMediaResultsWithLoanButton(List<? extends Media> mediaList) {
@@ -159,7 +169,7 @@ public class MainController implements SceneManager.ControlledScene {
             switch (selected) {
                 case "Böcker" -> {
                     System.out.println("Söker böcker med query: '" + query + "'");
-                    List<Book> books = bookDAO.getAllBooks();
+                    List<Book> books;
                     if (query.isBlank()) {
                         books = bookDAO.getAllBooks();
                         displayMediaResultsWithLoanButton(books);
@@ -170,39 +180,39 @@ public class MainController implements SceneManager.ControlledScene {
 
                 }
                 case "Författare" -> {
+                    List<Book> searchByAuthor = bookDAO.getAllBooks();
                     if (query.isBlank()) {
                         Label lbl = new Label("Skriv in författarnamn.");
                         searchResultsBox.getChildren().add(lbl);
-                        return;
                     }
-                    List<Book> filteredBooks = bookDAO.searchByAuthor(query);
-                    filteredBooks.forEach(book -> {
-                        Label lbl = new Label("Titel: " + book.getMediaName() + ", Författare: " + book.getAuthor());
-                        searchResultsBox.getChildren().add(lbl);
-                    });
+                    else {
+                        searchByAuthor = bookDAO.searchByAuthor(query);
+                        displayMediaResultsWithLoanButton(searchByAuthor);
+                    }
+
+
                 }
                 case "ISBN" -> {
                     if (query.isBlank()) {
                         Label lbl = new Label("Skriv in ISBN.");
                         searchResultsBox.getChildren().add(lbl);
-                        return;
                     }
                     List<Book> filteredBooks = bookDAO.searchByISBN(query);
-                    filteredBooks.forEach(book -> {
-                        Label lbl = new Label("Titel: " + book.getMediaName() + ", ISBN: " + book.getIsbn());
-                        searchResultsBox.getChildren().add(lbl);
-                    });
+                    displayMediaResultsWithLoanButton(filteredBooks);
                 }
                 case "Artiklar" -> {
                     List<Journal> journals = journalDAO.getAllJournals();
-                    journals.forEach(journal -> {
-                        Label lbl = new Label("Titel: " + journal.getMediaName() + ", Issue: " + journal.getIssueNumber());
-                        searchResultsBox.getChildren().add(lbl);
-                    });
+                    displayMediaResultsWithLoanButton(journals);
                 }
                 case "Media" -> {
-                    List<Media> mediaList = mediaDAO.getMedia();
-                    displayMediaResultsWithLoanButton(mediaList);
+                    if(query.isBlank()) {
+                        List<Media> mediaList = mediaDAO.getMedia();
+                        displayMediaResultsWithLoanButton(mediaList);
+                    }
+                    else {
+                        List<Media> mediaList = mediaDAO.searchMedia(query);
+                    }
+
                 }
                 case "Dvd" -> {
                     List<Dvd> dvds = dvdDAO.getAllDvd();
@@ -223,13 +233,11 @@ public class MainController implements SceneManager.ControlledScene {
                     displayMediaResultsWithLoanButton(mediaByCategory);
                 }
                 case "Skådespelare" -> {
-                    List<Actor> actors = actorDAO.getActors();
-                    actors.forEach(actor -> {
-                        Label lbl = new Label("ID: " + actor.getActorId() + ", Namn: " + actor.getFirstName() + " " + actor.getLastName());
-                        searchResultsBox.getChildren().add(lbl);
-                    });
+                    List<Dvd> actorsByDvd = dvdDAO.searchDvdByActorName(query);
+                    displayMediaResultsWithLoanButton(actorsByDvd);
+
                 }
-                case "MediaCopy" -> {
+                case "CopyStatus" -> {
                     if (query.isBlank()) {
                         Label lbl = new Label("Skriv in en media titel.");
                         searchResultsBox.getChildren().add(lbl);
@@ -237,7 +245,7 @@ public class MainController implements SceneManager.ControlledScene {
                     }
                     List<Copy> copies = copyDAO.searchCopiesByMediaName(query);
                     copies.forEach(copy -> {
-                        Label lbl = new Label("Exemplar ID: " + copy.getCopyId() + ", Status: " + copy.getAvailability());
+                        Label lbl = new Label("Exemplar ID: " + copy.getCopyId() + " MediaName: " + copy.getMediaName() + ", Status: " + copy.getAvailability());
                         searchResultsBox.getChildren().add(lbl);
                     });
                 }
@@ -253,18 +261,6 @@ public class MainController implements SceneManager.ControlledScene {
                     if(dvdByDirector.isEmpty()) {
                         System.out.println("Inga resultat för: " + query);
                     }
-                }
-                case "Titel" -> {
-                    if (query.isBlank()) {
-                        Label lbl = new Label("Skriv in en titel.");
-                        searchResultsBox.getChildren().add(lbl);
-                        return;
-                    }
-                    List<Media> mediaThatMatchesTitle = mediaDAO.searchMedia(query);
-                    mediaThatMatchesTitle.forEach(media -> {
-                        Label lbl = new Label("Titel: " + media.getMediaName() + ", Typ: " + media.getMediaType());
-                        searchResultsBox.getChildren().add(lbl);
-                    });
                 }
                 default -> {
                     Label lbl = new Label("Ingen giltig sökkategori vald.");

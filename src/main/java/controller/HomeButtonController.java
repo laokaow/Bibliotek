@@ -14,6 +14,8 @@ public class HomeButtonController {
     @FXML
     private void initialize() {
         // Ladda bilden från resources/images
+        //Får varning då den kan vara null. Den är inte det.
+        //Kan vara värt att hantera ifall man dynamiskt hämtar bilden
         Image image = new Image(getClass().getResourceAsStream("/view/HomeButtonIcon.png"));
         homeIcon.setImage(image);
     }

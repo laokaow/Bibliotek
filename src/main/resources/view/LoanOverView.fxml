@@ -8,4 +8,5 @@
     <Label text="Dina aktiva lån" style="-fx-font-size: 18;" />
     <ListView fx:id="loansListView" prefWidth="300" prefHeight="200"/>
     <Button text="Tillbaka" onAction="#handleBack"/>
+    <Button text="Returnera lån" onAction="#returnSelectedLoan"/>
 </VBox>

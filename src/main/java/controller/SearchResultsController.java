@@ -13,6 +13,7 @@ import model.Copy;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,8 @@ public class SearchResultsController {
     private FlowPane categoryTags;
     @FXML
     private Button btnLoan;
+    @FXML
+    private Label lblDuration;
 
     private Media media;
     private User currentUser;
@@ -50,10 +53,11 @@ public class SearchResultsController {
             lblAuthorOrDirector.setText("Författare: " + book.getAuthor());
         } else if (media instanceof Dvd dvd) {
             lblAuthorOrDirector.setText("Regissör: " + dvd.getDirector());
+            lblDuration.setText("Längd: " + dvd.getDuration() + " min");
+
         } else {
             lblAuthorOrDirector.setText("");
         }
-
 
         categoryTags.getChildren().clear();
         if (media instanceof Book book) {
@@ -92,6 +96,7 @@ public class SearchResultsController {
             List<Copy> availableCopies = copyDAO.getCopiesByMediaId2(media.getMediaId())
                     .stream()
                     .filter(copy -> copy.getAvailability() == Copy.AvailabilityStatus.AVAILABLE)
+                    .filter(copy -> !copy.isReferenceCopy())
                     .toList();
 
             if (availableCopies.isEmpty()) {
@@ -102,11 +107,26 @@ public class SearchResultsController {
             Copy copyToLoan = availableCopies.get(0);
             Loan loan = loanDAO.createLoan(currentUser, copyToLoan, LocalDate.now());
 
-            showAlert("Lån registrerat", "Du har lånat: " + media.getMediaName());
-            showAlert("Ditt kvitto: ", "kvittoid: "+ loan.getReceiptId());
+            // Skapa kvittoinfo som text
+            String receiptInfo = "Media: " + media.getMediaName() + "\n"
+                    + "Exemplar-ID: " + copyToLoan.getCopyId() + "\n"
+                    + "Lånedatum: " + loan.getBorrowDate() + "\n"
+                    + "Förfallodatum: " + loan.getDueDate() + "\n"
+                    + "Låntagare: " + currentUser.getFirstName() + " " + currentUser.getLastName();
+
+            // Lägger in kvittot i databasen
+            int receiptId = receiptDAO.createReceipt(currentUser, receiptInfo, LocalDateTime.now());
+
+            // Visar kvittot vid lån
+            String fullReceipt = "Kvitto-ID: " + receiptId + "\n" + receiptInfo;
+            showAlert("Lån registrerat", fullReceipt);
+
         } catch (SQLException e) {
             showAlert("Fel", "Ett fel uppstod vid utlåning.");
             e.printStackTrace();
+        } catch (IllegalStateException ise) {
+            showAlert("Ej tillåtet", ise.getMessage());
+            ise.printStackTrace();
         }
     }
 

@@ -108,7 +108,7 @@ public class LoanDAO {
                 updateStmt.setInt(1, copy.getCopyId());
                 int affectedRows = updateStmt.executeUpdate();
 
-                if(affectedRows== 0) throw new SQLException("Uppdatering av availability status misslyckades");
+                if (affectedRows == 0) throw new SQLException("Uppdatering av availability status misslyckades");
             }
 
             connection.commit();
@@ -129,15 +129,17 @@ public class LoanDAO {
     public Loan returnLoan(Loan loan, LocalDate returnDate) throws SQLException {
         connection.setAutoCommit(false);
 
-
         try {
+            if (returnDate == null) {
+                throw new IllegalArgumentException("Return date cannot be null");
+            }
+            if (loan.getBorrowDate() == null) {
+                throw new IllegalStateException("Borrow date cannot be null in loan");
+            }
+
             if (returnDate.isBefore(loan.getBorrowDate())) {
                 throw new IllegalArgumentException("Returdatum kan inte vara före lånedatum");
             }
-            if (loan.getReturnDate() != null) {
-                throw new IllegalArgumentException("Lånet är redan tillbakalämnat");
-            }
-
 
             String updateLoanSql = "UPDATE Loan SET returnDate = ? WHERE loanId = ?";
             try (PreparedStatement statement = connection.prepareStatement(updateLoanSql)) {
@@ -153,10 +155,10 @@ public class LoanDAO {
 
             try (PreparedStatement statement = connection.prepareStatement(updateCopySql)) {
                 statement.setInt(1, loan.getCopy().getCopyId());
-               int rowsAffected = statement.executeUpdate();
-               if (rowsAffected == 0){
-                   throw new SQLException("Kunde inte uppdatera exemplarets tillgänglighet");
-               }
+                int rowsAffected = statement.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new SQLException("Kunde inte uppdatera exemplarets tillgänglighet");
+                }
             }
             //Skapa nytt kvitto
             String info = "Återlämning av exemplar ID: " +
@@ -167,11 +169,12 @@ public class LoanDAO {
             LocalDateTime receiptDate = LocalDateTime.now();
             receiptDAO.createReceipt(loan.getUser(), info, receiptDate);
             connection.commit();
+            System.out.println("Commit done");
+
 
             loan.setReturnDate(returnDate);
             return loan;
-        }
-         catch (Exception e) {
+        } catch (Exception e) {
             connection.rollback(); //Går tillbaka och återställer transaktionerna vid fel. Så att inte databasen blir inconsistent
             throw e;
         } finally {
@@ -190,7 +193,8 @@ public class LoanDAO {
                 while (rs.next()) {
                     int loanId = rs.getInt("loanId");
                     LocalDate borrowDate = rs.getDate("borrowDate").toLocalDate();
-                    LocalDate dueDate = rs.getDate("dueDate") != null ? rs.getDate("dueDate").toLocalDate() : null;
+                    // != null ? rs.getDate("dueDate").toLocalDate() : null;
+                    LocalDate dueDate = rs.getDate("dueDate").toLocalDate();
                     User user = userDAO.getUserById(rs.getInt("userId"));
                     int copyId = rs.getInt("copyId");
                     Copy copy = copyDAO.getCopyById(copyId);
@@ -220,6 +224,7 @@ public class LoanDAO {
         // Anpassa till din konstruktor (se till att argumenten passar)
         return new Loan(loanId, user, copy, receiptId, returnDate, borrowDate, dueDate);
     }
+
     //Nedanstående skapad för att inte behöva ändra i model.Loan
     public List<LoanDTO> getLoanDTOsByUserId(int userId) {
         List<LoanDTO> loanDTOs = new ArrayList<>();
@@ -227,20 +232,21 @@ public class LoanDAO {
                 "FROM Loan l " +
                 "JOIN Copy c ON l.copyId = c.copyId " +
                 "JOIN Media m ON c.mediaId = m.mediaId " +
-                "WHERE l.userId = ?";
+                "WHERE l.userId = ? AND l.returnDate IS NULL";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Loan loan = mapResultSetToLoan(rs);
-                String mediaTitle = rs.getString("mediaTitle");
-                loanDTOs.add(new LoanDTO(loan, mediaTitle));
+                String mediaName = rs.getString("mediaName");
+                loanDTOs.add(new LoanDTO(loan, mediaName));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return loanDTOs;
     }
+
     public List<Loan> getDueSoonLoansForUser(int userId) throws SQLException {
         String sql = "SELECT * FROM DueSoonLoansView WHERE userId = ?";
         List<Loan> loans = new ArrayList<>();
@@ -313,6 +319,30 @@ public class LoanDAO {
         }
         return loans;
     }
+    public Loan getLoanById(int loanId) throws SQLException {
+        String sql = "SELECT * FROM Loan WHERE loanId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, loanId);
 
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int copyId = rs.getInt("copyId");
+                    int userId =  rs.getInt("userId");
+                    Copy copy = copyDAO.getCopyById(copyId);
+                    User user = userDAO.getUserById(userId);
+
+                    return new Loan (
+                            rs.getInt("loanId"),
+                            user,
+                            copy,
+                            rs.getInt("receiptId"),
+                            rs.getDate("borrowDate").toLocalDate(),
+                            rs.getDate("dueDate").toLocalDate(),
+                            rs.getDate("returnDate") != null ? rs.getDate("returnDate").toLocalDate() : null
+                    );
+                }
+            }
+        }
+        return null;
+    }
 }
-

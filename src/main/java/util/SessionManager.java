@@ -21,6 +21,4 @@ public class SessionManager {
         loggedInUser = null;
     }
 
-    public static void clear() {
-    }
 }
