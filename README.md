@@ -17,3 +17,5 @@ Vissa funktioner är att önska och GUIn är inte helt användarvänlig.
 Exempelvis så visas inte inloggad användare om än de är inloggade.
 Logiken funkar men det är en bara en visuell(men väldigt viktig) grej.
 Denna funktionalitet kommer att skapas vid ett senare tillfälle.
+
+@authors Edwin Bylander & William Karlsson 
